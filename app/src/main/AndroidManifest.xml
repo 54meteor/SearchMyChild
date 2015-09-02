@@ -35,6 +35,24 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".AddAddressActivity"
+            />
+
+        <activity
+            android:name=".AboutMeActivity"
+            />
+        <activity
+            android:name=".CaptureActivity"
+            />
+        <activity
+            android:name=".AddressInfoActivity"
+            />
+        <activity
+            android:name=".EditAddressActivity"
+            />
+
+
 
         <!-- 设置环信应用的appkey -->
         <meta-data android:name="EASEMOB_APPKEY"  android:value="yasite-net#findmychild" />

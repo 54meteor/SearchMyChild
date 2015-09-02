@@ -1,7 +1,5 @@
 package child.yasite.net.searchmychild.util;
 
-import net.yasite.searchperson.BaseApplication;
-import net.yasite.searchperson.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
@@ -11,6 +9,9 @@ import android.widget.BaseAdapter;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+
+import child.yasite.net.searchmychild.BaseApplication;
+import child.yasite.net.searchmychild.R;
 
 public abstract class YasiteAdapter extends BaseAdapter {
 	protected int layoutId;
@@ -27,9 +28,9 @@ public abstract class YasiteAdapter extends BaseAdapter {
 		mImageLoader = BaseApplication.initImageLoader(context);
 		options = new DisplayImageOptions.Builder()
 		.bitmapConfig(Bitmap.Config.RGB_565)
-		.showStubImage(R.drawable.ic_launcher)
-        .showImageForEmptyUri(R.drawable.ic_launcher)
-        .showImageOnFail(R.drawable.ic_launcher)
+		.showStubImage(R.mipmap.ic_launcher)
+        .showImageForEmptyUri(R.mipmap.ic_launcher)
+        .showImageOnFail(R.mipmap.ic_launcher)
 		.cacheInMemory(true)
 		.cacheOnDisc(true)
 		.build();

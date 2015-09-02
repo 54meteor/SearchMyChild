@@ -11,7 +11,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
-import ct.bi;
+
 /**
  * @类功能说明: 生成二维码图片示例
  * @作者:饶正勇

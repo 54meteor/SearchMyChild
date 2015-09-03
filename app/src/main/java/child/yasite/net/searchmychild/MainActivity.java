@@ -4,20 +4,32 @@ package child.yasite.net.searchmychild;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.easemob.EMCallBack;
+import com.easemob.EMError;
+import com.easemob.chat.EMChat;
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMGroup;
+import com.easemob.chat.EMGroupManager;
 
 import org.jivesoftware.smack.packet.Message;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import child.yasite.net.searchmychild.adapter.AddressAdapter;
@@ -45,6 +57,11 @@ public class MainActivity extends BaseNewActivity {
     public String[] sections;
     private Handler handler;
     private OverlayThread overlayThread;
+
+    private static Random randGen = null;
+    private static char[] numbersAndLetters = null;
+    public String android_imei;
+    SharedPreferences prefs;
 
 
     @Override
@@ -86,16 +103,56 @@ public class MainActivity extends BaseNewActivity {
         model = new AddressModel(context);
 
         listview.setAdapter(adapter);
-//        listview.setOnItemClickListener(new OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView<?> arg0, View arg1,
-//                                    int position,long arg3) {
-//                Intent it = new Intent(context,AddressInfoActivity.class);
-//                it.putExtra("id", adapter.getItem(position).get_id());
-//                startActivity(it);
-//            }
-//        });
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1,
+                                    int position,long arg3) {
+                Intent it = new Intent(context,AddressInfoActivity.class);
+                it.putExtra("id", adapter.getItem(position).get_id());
+                startActivity(it);
+            }
+        });
+
+
+        if(prefs.getString("UUID", null) == null || prefs.getString("UUID", null).equals("")){
+            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            android_imei =  telephonyManager.getDeviceId();
+            if(android_imei == null || android_imei.equals("")){
+                android_imei = randomString(20);
+            }
+            prefs.edit().putString("UUID", android_imei).commit();
+        }
+
+        if(EMChat.getInstance().isLoggedIn()){
+            EMGroupManager.getInstance().loadAllGroups();
+            EMChatManager.getInstance().loadAllConversations();
+        }else{
+            EMChatManager.getInstance().login(android_imei, "123456", new EMCallBack() {
+                @Override
+                public void onSuccess() {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            EMGroupManager.getInstance().loadAllGroups();
+                            EMChatManager.getInstance().loadAllConversations();
+                            Log.d("main", "登陆聊天服务器成功！");
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(int i, String s) {
+                    if(i == EMError.INVALID_PASSWORD_USERNAME || i == EMError.USER_REMOVED){
+                        System.out.println(i);
+                    }
+                }
+
+                @Override
+                public void onProgress(int i, String s) {
+
+                }
+            });
+        }
     }
     @Override
     public boolean getIntentValue() {
@@ -203,5 +260,22 @@ public class MainActivity extends BaseNewActivity {
         } else {
             return "#";
         }
+    }
+
+
+    private String randomString(int length) {
+        if (length < 1) {
+            return null;
+        }
+        if (randGen == null) {
+            randGen = new Random();
+            numbersAndLetters = ("0123456789abcdefghijklmnopqrstuvwxyz" +
+                    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ").toCharArray();
+        }
+        char [] randBuffer = new char[length];
+        for (int i=0; i<randBuffer.length; i++) {
+            randBuffer[i] = numbersAndLetters[randGen.nextInt(71)];
+        }
+        return new String(randBuffer);
     }
 }

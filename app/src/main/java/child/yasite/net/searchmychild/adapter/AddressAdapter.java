@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import child.yasite.net.searchmychild.CommandActivity;
 import child.yasite.net.searchmychild.R;
 import child.yasite.net.searchmychild.entity.AddressEntitiy;
 import child.yasite.net.searchmychild.util.YasiteAdapter;
@@ -98,6 +99,8 @@ public class AddressAdapter extends YasiteAdapter implements PinnedSectionListVi
 			// TODO Auto-generated method stub
 //			new SendMessageHandler(context,
 //					(String)v.getTag()).execute();
+			Intent it = new Intent(context, CommandActivity.class);
+			context.startActivity(it);
 		}
 	}
 	

@@ -1,0 +1,34 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="child.yasite.net.searchmychild.CommandActivity">
+
+    <TextView
+        android:id="@+id/getVoice"
+        android:text="获取声音"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+    <TextView
+        android:id="@+id/getLocate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/getVoice"
+        android:layout_marginTop="10dp"
+        android:text="获取位置"/>
+
+
+    <TextView
+        android:id="@+id/getPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/getLocate"
+        android:layout_marginTop="10dp"
+        android:text="获取照片"
+        />
+</RelativeLayout>

@@ -1,15 +1,20 @@
 package child.yasite.net.searchmychild;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
+
+import com.easemob.chat.EMContactManager;
 
 import child.yasite.net.searchmychild.entity.AddressEntitiy;
 import child.yasite.net.searchmychild.model.AddressModel;
 import child.yasite.net.searchmychild.util.ActivityUtil;
 import child.yasite.net.searchmychild.util.CreateQRImageTest;
+import child.yasite.net.searchmychild.util.HandlerHelp;
 
 
 public class AddressInfoActivity extends BaseNewActivity {
@@ -38,6 +43,35 @@ public class AddressInfoActivity extends BaseNewActivity {
 				finish();
 			}
 		});
+		getButton(R.id.delBtn).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				new DelHandler(context).execute();
+			}
+		});
+	}
+
+	class DelHandler extends HandlerHelp{
+
+		public DelHandler(Context context) {
+			super(context);
+		}
+
+		@Override
+		public void updateUI() {
+			finish();
+		}
+
+		@Override
+		public void doTask(Message msg) throws Exception {
+			EMContactManager.getInstance().deleteContact(entity.getToken());
+			addressModel.delAddress(entity);
+		}
+
+		@Override
+		public void doTaskAsNoNetWork(Message msg) throws Exception {
+
+		}
 	}
 
 	@Override

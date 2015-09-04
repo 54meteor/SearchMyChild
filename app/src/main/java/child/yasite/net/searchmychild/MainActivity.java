@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,13 +18,17 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.easemob.EMCallBack;
 import com.easemob.EMError;
 import com.easemob.chat.EMChat;
 import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMContactListener;
+import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
+import com.easemob.exceptions.EaseMobException;
 
 import org.jivesoftware.smack.packet.Message;
 
@@ -114,6 +119,7 @@ public class MainActivity extends BaseNewActivity {
             }
         });
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if(prefs.getString("UUID", null) == null || prefs.getString("UUID", null).equals("")){
             TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -122,7 +128,45 @@ public class MainActivity extends BaseNewActivity {
                 android_imei = randomString(20);
             }
             prefs.edit().putString("UUID", android_imei).commit();
+        }else{
+            android_imei = prefs.getString("UUID",null);
         }
+
+
+        EMContactManager.getInstance().setContactListener(new EMContactListener() {
+
+            @Override
+            public void onContactAgreed(String username) {
+                //好友请求被同意
+                Log.d("invite","好友请求被同意");
+            }
+
+            @Override
+            public void onContactRefused(String username) {
+                //好友请求被拒绝
+                Log.d("invite","好友请求被拒绝");
+            }
+
+            @Override
+            public void onContactInvited(String username, String reason) {
+                //收到好友邀请
+                Log.d("invite","收到好友邀请");
+            }
+
+            @Override
+            public void onContactDeleted(List<String> usernameList) {
+                //被删除时回调此方法
+                Log.d("invite","被删除");
+            }
+
+
+            @Override
+            public void onContactAdded(List<String> usernameList) {
+                //增加了联系人时回调此方法
+                Log.d("invite","增加联系人");
+            }
+        });
+
 
         if(EMChat.getInstance().isLoggedIn()){
             EMGroupManager.getInstance().loadAllGroups();
@@ -143,8 +187,29 @@ public class MainActivity extends BaseNewActivity {
                 @Override
                 public void onError(int i, String s) {
                     if(i == EMError.INVALID_PASSWORD_USERNAME || i == EMError.USER_REMOVED){
-                        System.out.println(i);
+                        System.out.println(s);
+
+                        new Thread(new Runnable() {
+                            public void run() {
+                                try {
+                                    // 调用sdk注册方法
+                                    EMChatManager.getInstance().createAccountOnServer(android_imei, "123456");
+                                } catch (final EaseMobException e) {
+                                    //注册失败
+                                    int errorCode=e.getErrorCode();
+                                    if(errorCode==EMError.NONETWORK_ERROR){
+                                        Toast.makeText(getApplicationContext(), "网络异常，请检查网络！", Toast.LENGTH_SHORT).show();
+                                    }else if(errorCode==EMError.USER_ALREADY_EXISTS){
+                                        Toast.makeText(getApplicationContext(), "用户已存在！", Toast.LENGTH_SHORT).show();
+                                    }else if(errorCode==EMError.UNAUTHORIZED){
+                                        Toast.makeText(getApplicationContext(), "注册失败，无权限！", Toast.LENGTH_SHORT).show();
+                                    }else{
+                                        Toast.makeText(getApplicationContext(), "注册失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }}).start();
                     }
+                    Log.d("main","登录失败");
                 }
 
                 @Override

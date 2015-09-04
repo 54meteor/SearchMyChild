@@ -1,15 +1,20 @@
 package child.yasite.net.searchmychild;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 
+import com.easemob.chat.EMContactManager;
+
 import child.yasite.net.searchmychild.entity.AddressEntitiy;
 import child.yasite.net.searchmychild.model.AddressModel;
 import child.yasite.net.searchmychild.util.ActivityUtil;
+import child.yasite.net.searchmychild.util.HandlerHelp;
 
 public class AddAddressActivity extends BaseNewActivity {
 	protected EditText name;
@@ -77,8 +82,34 @@ public class AddAddressActivity extends BaseNewActivity {
 		entity.setPinyin(ActivityUtil.pinyin(entity.getName()));
 	}
 	protected void doSave(){
-		model.addAddress(entity);
-		finish();
+//		model.addAddress(entity);
+//		finish();
+		new AddHandler(context).execute();
+	}
+
+
+
+	class AddHandler extends HandlerHelp{
+
+		public AddHandler(Context context) {
+			super(context);
+		}
+
+		@Override
+		public void updateUI() {
+			finish();
+		}
+
+		@Override
+		public void doTask(Message msg) throws Exception {
+			model.addAddress(entity);
+			EMContactManager.getInstance().addContact(entity.getToken(),"");
+		}
+
+		@Override
+		public void doTaskAsNoNetWork(Message msg) throws Exception {
+
+		}
 	}
 	
 	protected void save(){

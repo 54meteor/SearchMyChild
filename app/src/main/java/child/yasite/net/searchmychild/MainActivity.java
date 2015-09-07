@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import child.yasite.net.searchmychild.adapter.AddressAdapter;
 import child.yasite.net.searchmychild.entity.AddressEntitiy;
 import child.yasite.net.searchmychild.model.AddressModel;
+import child.yasite.net.searchmychild.util.ActivityUtil;
 import child.yasite.net.searchmychild.view.MyLetterListView;
 import child.yasite.net.searchmychild.view.PinnedSectionListView;
 
@@ -133,44 +134,14 @@ public class MainActivity extends BaseNewActivity {
         }
 
 
-        EMContactManager.getInstance().setContactListener(new EMContactListener() {
 
-            @Override
-            public void onContactAgreed(String username) {
-                //好友请求被同意
-                Log.d("invite","好友请求被同意");
-            }
-
-            @Override
-            public void onContactRefused(String username) {
-                //好友请求被拒绝
-                Log.d("invite","好友请求被拒绝");
-            }
-
-            @Override
-            public void onContactInvited(String username, String reason) {
-                //收到好友邀请
-                Log.d("invite","收到好友邀请");
-            }
-
-            @Override
-            public void onContactDeleted(List<String> usernameList) {
-                //被删除时回调此方法
-                Log.d("invite","被删除");
-            }
-
-
-            @Override
-            public void onContactAdded(List<String> usernameList) {
-                //增加了联系人时回调此方法
-                Log.d("invite","增加联系人");
-            }
-        });
 
 
         if(EMChat.getInstance().isLoggedIn()){
             EMGroupManager.getInstance().loadAllGroups();
             EMChatManager.getInstance().loadAllConversations();
+            ActivityUtil.showToast(context,"自动登录成功");
+
         }else{
             EMChatManager.getInstance().login(android_imei, "123456", new EMCallBack() {
                 @Override
@@ -179,7 +150,7 @@ public class MainActivity extends BaseNewActivity {
                         public void run() {
                             EMGroupManager.getInstance().loadAllGroups();
                             EMChatManager.getInstance().loadAllConversations();
-                            Log.d("main", "登陆聊天服务器成功！");
+                            ActivityUtil.showToast(context, "登陆聊天服务器成功！");
                         }
                     });
                 }
@@ -218,6 +189,51 @@ public class MainActivity extends BaseNewActivity {
                 }
             });
         }
+
+
+        EMContactManager.getInstance().setContactListener(new EMContactListener() {
+
+            @Override
+            public void onContactAgreed(String username) {
+                //好友请求被同意
+//                ActivityUtil.showToast(context, "好友请求被同意");
+                System.out.println("111111");
+            }
+
+            @Override
+            public void onContactRefused(String username) {
+                //好友请求被拒绝
+//                ActivityUtil.showToast(context, "好友请求被拒绝");
+                System.out.println("222222");
+
+            }
+
+            @Override
+            public void onContactInvited(String username, String reason) {
+                //收到好友邀请
+//                ActivityUtil.showToast(context, "收到好友邀请");
+                System.out.println("333333");
+
+            }
+
+            @Override
+            public void onContactDeleted(List<String> usernameList) {
+                //被删除时回调此方法
+//                ActivityUtil.showToast(context, "被删除");
+                System.out.println("444444");
+
+            }
+
+
+            @Override
+            public void onContactAdded(List<String> usernameList) {
+                //增加了联系人时回调此方法
+//                ActivityUtil.showToast(context, "增加联系人");
+                System.out.println("55555555");
+
+            }
+        });
+        EMChat.getInstance().setAppInited();
     }
     @Override
     public boolean getIntentValue() {

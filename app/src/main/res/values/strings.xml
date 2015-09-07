@@ -5,6 +5,13 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_command">CommandActivity</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="location_prefix">[我的位置]</string>
+    <string name="location_recv">[%1$s的位置]</string>
+    <string name="picture">[图片]</string>
+    <string name="video">[视频]</string>
+    <string name="file">[文件]</string>
+    <string name="voice_call">[语音通话]</string>
+    <string name="voice">声音</string>
+
 
 </resources>

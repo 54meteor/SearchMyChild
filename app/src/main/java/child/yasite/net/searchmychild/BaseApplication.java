@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.StrictMode;
+import android.util.Log;
 
 import com.easemob.chat.EMChat;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;

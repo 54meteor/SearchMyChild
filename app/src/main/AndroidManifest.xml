@@ -42,13 +42,62 @@
         <meta-data
             android:name="EASEMOB_APPKEY"
             android:value="yasite-net#findmychild" />
-        <!-- 声明sdk所需的service SDK核心功能 -->
-        <service android:name="com.easemob.chat.EMChatService" />
 
         <activity
-            android:name=".CommandActivity"
-            android:label="@string/title_activity_command" >
+            android:name=".CommandActivity">
         </activity>
+
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="5524edfdfd98c53e6a000079" >
+        </meta-data>
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="eoe" >
+        </meta-data>
+
+
+        <!-- 声明sdk所需的service -->
+        <service android:name="com.easemob.chat.EMChatService"/>
+        <!-- 声明sdk所需的receiver -->
+        <receiver android:name="com.easemob.chat.EMMonitorReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+
+
+        <!-- 开机自启动服务 -->
+        <receiver android:name="com.easemob.chat.StartServiceReceiver" >
+            <intent-filter android:priority="1000" >
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- gcm start -->
+        <receiver
+            android:name="com.easemob.chat.EMGCMBroadcastReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.easemob.chatuidemo" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.easemob.chat.EMGCMListenerService"
+            android:exported="false" >
+        </service>
+
+
     </application>
 
 </manifest>

@@ -59,13 +59,14 @@ public class AddressInfoActivity extends BaseNewActivity {
 
 		@Override
 		public void updateUI() {
+			addressModel.delAddress(entity);
 			finish();
 		}
 
 		@Override
 		public void doTask(Message msg) throws Exception {
 			EMContactManager.getInstance().deleteContact(entity.getToken());
-			addressModel.delAddress(entity);
+
 		}
 
 		@Override

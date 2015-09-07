@@ -103,7 +103,7 @@ public class AddAddressActivity extends BaseNewActivity {
 		@Override
 		public void doTask(Message msg) throws Exception {
 			model.addAddress(entity);
-			EMContactManager.getInstance().addContact(entity.getToken(),"");
+			EMContactManager.getInstance().addContact(entity.getToken(),"llllll");
 		}
 
 		@Override

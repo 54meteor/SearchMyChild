@@ -16,6 +16,16 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.READ_LOGS" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
 
     <application
         android:allowBackup="true"
@@ -93,9 +103,33 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".receiver.CMDReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="easemob.cmdmsgyasite.net.findmychildchild.yasite.net.searchmychild"/>
+
+            </intent-filter>
+        </receiver>
+
         <service android:name="com.easemob.chat.EMGCMListenerService"
             android:exported="false" >
         </service>
+
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" >
+            <intent-filter>
+                <action android:name="com.baidu.location.service_v2.2" >
+                </action>
+            </intent-filter>
+        </service>
+
+        <!-- meta-data需要写在application中 -->
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="7u06wqoe1qNQN6265B5D1XQW" />
+
 
 
     </application>

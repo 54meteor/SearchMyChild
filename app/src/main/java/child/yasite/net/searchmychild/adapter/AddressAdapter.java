@@ -71,7 +71,7 @@ public class AddressAdapter extends YasiteAdapter implements PinnedSectionListVi
 			Holder hold = (Holder)holder;
 			hold.name.setText(entity.getName());
 			hold.search.setTag(entity.getToken());
-			hold.search.setOnClickListener(new SendMessageClick());
+			hold.search.setOnClickListener(new SendMessageClick(list.get(position)));
 		}
 	}
 
@@ -93,6 +93,10 @@ public class AddressAdapter extends YasiteAdapter implements PinnedSectionListVi
 	}
 	
 	class SendMessageClick implements OnClickListener{
+		AddressEntitiy entitiy;
+		public SendMessageClick(AddressEntitiy entity){
+			this.entitiy = entity;
+		}
 
 		@Override
 		public void onClick(View v) {
@@ -100,6 +104,7 @@ public class AddressAdapter extends YasiteAdapter implements PinnedSectionListVi
 //			new SendMessageHandler(context,
 //					(String)v.getTag()).execute();
 			Intent it = new Intent(context, CommandActivity.class);
+			it.putExtra("token",entitiy.getToken());
 			context.startActivity(it);
 		}
 	}

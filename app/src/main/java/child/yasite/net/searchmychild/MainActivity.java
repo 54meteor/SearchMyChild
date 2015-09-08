@@ -230,7 +230,7 @@ public class MainActivity extends BaseNewActivity {
                 //增加了联系人时回调此方法
 //                ActivityUtil.showToast(context, "增加联系人");
                 System.out.println("55555555");
-
+                System.out.println(usernameList.get(0));
             }
         });
         EMChat.getInstance().setAppInited();

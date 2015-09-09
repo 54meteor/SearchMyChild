@@ -7,47 +7,111 @@ import android.util.Log;
 
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.easemob.EMCallBack;
 import com.easemob.chat.CmdMessageBody;
+import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMMessage;
+import com.tencent.map.geolocation.TencentLocation;
+import com.tencent.map.geolocation.TencentLocationListener;
+import com.tencent.map.geolocation.TencentLocationManager;
+import com.tencent.map.geolocation.TencentLocationRequest;
 
 import child.yasite.net.searchmychild.BaseApplication;
 
 /**
  * Created by yuxiaoying on 15/9/8.
  */
-public class CMDReceiver extends BroadcastReceiver {
+public class CMDReceiver extends BroadcastReceiver implements TencentLocationListener{
+
+    private TencentLocation mLocation;
+    private TencentLocationManager mLocationManager;
 
     private LocationClient mLocationClient;
+    String from;
     @Override
     public void onReceive(Context context, Intent intent) {
         String msgId = intent.getStringExtra("msgid");
         EMMessage message = intent.getParcelableExtra("message");
         //获取消息body
         CmdMessageBody cmdMsgBody = (CmdMessageBody) message.getBody();
+        from = message.getFrom();
         String aciton = cmdMsgBody.action;//获取自定义action
         //获取扩展属性
 //        String attr=message.getStringAttribute("a");
-
-
-        mLocationClient = BaseApplication.mLocationClient;
-        initLocation();
-        mLocationClient.start();
-
+        System.out.print("action:" + aciton);
+        if(aciton.equals("Locate")){
+            mLocationManager = TencentLocationManager.getInstance(context);
+            // 设置坐标系为 gcj-02, 缺省坐标为 gcj-02, 所以通常不必进行如下调用
+            mLocationManager.setCoordinateType(TencentLocationManager.COORDINATE_TYPE_GCJ02);
+            startLocation();
+        }
     }
 
-    private void initLocation(){
-        LocationClientOption option = new LocationClientOption();
-        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
-        option.setCoorType("gcj02");//可选，默认gcj02，设置返回的定位结果坐标系，
-        int span=1000;
-        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
-        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
-        option.setOpenGps(true);//可选，默认false,设置是否使用gps
-        option.setLocationNotify(true);//可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
-        option.setIgnoreKillProcess(true);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
-        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
-        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
-        option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
-        mLocationClient.setLocOption(option);
+    @Override
+    public void onLocationChanged(TencentLocation location, int error,
+                                  String reason) {
+        if (error == TencentLocation.ERROR_OK) {
+            mLocation = location;
+
+            // 定位成功
+            StringBuilder sb = new StringBuilder();
+            sb.append("定位参数=").append("").append("\n");
+            sb.append("(纬度=").append(location.getLatitude()).append(",经度=")
+                    .append(location.getLongitude()).append(",精度=")
+                    .append(location.getAccuracy()).append("), 来源=")
+                    .append(location.getProvider()).append(", 地址=")
+                    .append(location.getAddress());
+            System.out.println(sb.toString());
+            stopLocation();
+
+            EMMessage cmdMsg = EMMessage.createSendMessage(EMMessage.Type.CMD);
+
+            //支持单聊和群聊，默认单聊，如果是群聊添加下面这行
+//                cmdMsg.setChatType(ChatType.GroupChat)
+            String action="ReturnLocation";//action可以自定义，在广播接收时可以收到
+            CmdMessageBody cmdBody=new CmdMessageBody(action);
+            cmdMsg.setReceipt(from);
+            cmdMsg.addBody(cmdBody);
+            cmdMsg.setAttribute("long",Double.toString(location.getLongitude()));
+            cmdMsg.setAttribute("lati",Double.toString(location.getLatitude()));
+            EMChatManager.getInstance().sendMessage(cmdMsg, new EMCallBack() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onError(int i, String s) {
+
+                }
+
+                @Override
+                public void onProgress(int i, String s) {
+
+                }
+            });
+        }
     }
+
+    @Override
+    public void onStatusUpdate(String name, int status, String desc) {
+        // ignore
+        System.out.println("update");
+    }
+
+    // ====== location callback
+
+    private void startLocation() {
+        TencentLocationRequest request = TencentLocationRequest.create();
+        request.setInterval(5000);
+        mLocationManager.requestLocationUpdates(request, this);
+
+//        mRequestParams = request.toString() + ", 坐标系="
+//                + DemoUtils.toString(mLocationManager.getCoordinateType());
+    }
+
+    private void stopLocation() {
+        mLocationManager.removeUpdates(this);
+    }
+
 }

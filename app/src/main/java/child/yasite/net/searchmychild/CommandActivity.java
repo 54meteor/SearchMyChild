@@ -52,15 +52,18 @@ public class CommandActivity extends BaseNewActivity implements View.OnClickList
                     System.out.println(message.getStringAttribute("lati"));
                     GeoPoint p1 =
                             new GeoPoint(
-                                    (int)(Double.parseDouble(message.getStringAttribute("long")) * 1e6),
-                                    (int)(Double.parseDouble(message.getStringAttribute("lati")) * 1e6));
+                                    (int)(Double.parseDouble(message.getStringAttribute("lati")) * 1e6),
+                                    (int)(Double.parseDouble(message.getStringAttribute("long")) * 1e6));
                     Bitmap bmpMarker = BitmapFactory.decodeResource(getResources(),
                             R.mipmap.mark_location);
                     mLocationOverlay = new LocationOverlay(bmpMarker);
                     mMapView.addOverlay(mLocationOverlay);
-                    mLocationOverlay.setAccuracy(5.0f);
+                    mLocationOverlay.setAccuracy(150.0f);
+                    System.out.println(p1.getLatitudeE6());
                     mLocationOverlay.setGeoCoords(p1);
                     mMapView.invalidate();
+                    mMapView.getController().animateTo(p1);
+                    mMapView.getController().setZoom(16);
                     System.out.println("receiver结束");
 
                 } catch (EaseMobException e) {
@@ -79,7 +82,7 @@ public class CommandActivity extends BaseNewActivity implements View.OnClickList
         mMapView.getController().setZoom(9);
 
         Bitmap bmpMarker = BitmapFactory.decodeResource(getResources(),
-                R.mipmap.ic_launcher);
+                R.mipmap.mark_location);
         mLocationOverlay = new LocationOverlay(bmpMarker);
         mMapView.addOverlay(mLocationOverlay);
     }
@@ -183,28 +186,31 @@ class LocationOverlay extends Overlay {
 
     @Override
     public void draw(Canvas canvas, MapView mapView) {
+        System.out.println("onDraw");
         if (geoPoint == null) {
             return;
         }
+        System.out.println("onDraw1");
         Projection mapProjection = mapView.getProjection();
         Paint paint = new Paint();
         Point ptMap = mapProjection.toPixels(geoPoint, null);
         paint.setColor(Color.BLUE);
         paint.setAlpha(8);
         paint.setAntiAlias(true);
-
+        System.out.println("onDraw2");
         float fRadius = mapProjection.metersToEquatorPixels(fAccuracy);
         canvas.drawCircle(ptMap.x, ptMap.y, fRadius, paint);
         paint.setStyle(Paint.Style.STROKE);
         paint.setAlpha(200);
         canvas.drawCircle(ptMap.x, ptMap.y, fRadius, paint);
-
+        System.out.println("onDraw3");
         if (bmpMarker != null) {
+            System.out.println("onDrawBTM");
             paint.setAlpha(255);
             canvas.drawBitmap(bmpMarker, ptMap.x - bmpMarker.getWidth() / 2,
                     ptMap.y - bmpMarker.getHeight() / 2, paint);
         }
-
+        System.out.println("onDraw4");
         super.draw(canvas, mapView);
     }
 }
